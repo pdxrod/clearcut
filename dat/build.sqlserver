@@ -1,0 +1,46 @@
+-- build.sqlserver
+
+CREATE DATABASE clearcut_test;
+
+USE clearcut_test;
+CREATE PROCEDURE  clinic_names AS SELECT clinic_name FROM test;
+CREATE PROCEDURE  drug_name 
+ @drug_id VARCHAR(255) 
+ AS SELECT drug_name FROM test WHERE @drug_id = id; 
+CREATE PROCEDURE  change_clinic_name
+ @old_name VARCHAR(255), 
+ @new_name VARCHAR(255)
+ AS  UPDATE test SET clinic_name = @new_name WHERE clinic_name = @old_name;
+
+CREATE TABLE test (
+id int identity NOT NULL,  
+drug_name varchar(255) NOT NULL,
+clinic_name varchar(255)  , 
+member_id int  ,
+external_id varchar(255)  ,
+source varchar(255)  ,
+created_date datetime  ,
+deleted_date datetime  ,
+accepted_date datetime  ,
+last_touched_date datetime  ,
+optlock int ,
+ CONSTRAINT [test_pk] PRIMARY KEY  CLUSTERED 
+	(
+		id
+	)  ON [PRIMARY]
+) ON [PRIMARY]       
+;  
+
+
+CREATE TABLE actor_types (
+  id int identity NOT NULL,
+  name varchar(255) ,
+  CONSTRAINT [actor_types_pk] PRIMARY KEY  CLUSTERED 
+	(
+		id
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+;
+
+insert into actor_types (name) values ('Doctor');
+insert into actor_types (name) values ('Member');

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+<display-name>Clearcut Demo</display-name>
+<description>clearcut-example-app.ini should be somewhere above the app. server's executable folder</description>
+                         
+        <servlet>
+          <servlet-name>clearcut-example</servlet-name>
+          <servlet-class>clearcut.ServletController</servlet-class>
+          <load-on-startup>1</load-on-startup>
+        </servlet>
+
+        <servlet-mapping>
+          <servlet-name>clearcut-example</servlet-name>
+          <url-pattern>/*</url-pattern>
+        </servlet-mapping>
+
+        <welcome-file-list>
+                 <welcome-file>index.jsp</welcome-file>
+        </welcome-file-list>
+        
+</web-app>
