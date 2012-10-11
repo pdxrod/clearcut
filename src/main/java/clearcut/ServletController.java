@@ -12,15 +12,15 @@ public class ServletController extends HttpServlet
 	
 	    private static clearcut.Injector injector;
 	    protected void service( HttpServletRequest httpServletRequest, 
-														 HttpServletResponse httpServletResponse) throws IOException, ServletException { 
+								HttpServletResponse httpServletResponse) throws IOException, ServletException { 
 										httpServletResponse.getWriter().write( "<center>\n" );   
 										try { 															
 															String name = this.getServletName();    
 															clearcut.Ini.app( name );
 															injector = new clearcut.Injector();       															
 															example.biz.IMember member = (example.biz.IMember) injector.implement( "member" );   
-														  String memberName = member.name();
-														  String actorType = member.actorType();   														   
+														    String memberName = member.name();
+														    String actorType = member.actorType();   														   
 
 															httpServletResponse.getWriter().write( name + "<br />" 
 															                       + actorType + " " + memberName + "\n" );

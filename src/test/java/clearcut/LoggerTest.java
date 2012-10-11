@@ -25,7 +25,7 @@ public class LoggerTest extends TestCase {
 	  String msg = "Logger Test ";
 	  for( int i = 1; i < 1001; i ++ ) 
 	    this.logger.log( msg + i );
-		File file = new File  ( this.logger.getLogPath() );
+	  File file = new File  ( this.logger.getLogPath() );
 	  File [] files = file.listFiles( this.logger.getLogFilter() ) ;
 	  int bigOnes = 1; 
 	  int smallOnes = 0;
@@ -33,7 +33,7 @@ public class LoggerTest extends TestCase {
 			 if( logFile.length() > 512 )
 				 bigOnes ++;	    
 			 else
-			   smallOnes ++;
+			     smallOnes ++;
 				
 		assertTrue( "Size matters - there are " + smallOnes + " small ones and "
 		 + bigOnes + " big ones", bigOnes > smallOnes * 2 ); 

@@ -137,7 +137,7 @@ public class DataTest extends TestCase {
       changes.put( "created_date", "2007-01-29" );
       changes.put( "deleted_date", "2007-09-29" );
    	  changes.put( "drug_name", "Agenerase" );           
-	  	changes.put( "clinic_name", "Denver Hospital" );
+	  changes.put( "clinic_name", "Denver Hospital" );
 		  try {
 		      this.dataset.insert( "test", changes );
 		  }
@@ -160,8 +160,8 @@ public class DataTest extends TestCase {
 	  }         
 	  assertTrue(  "Two different ids not found - needed for test" ,! num.equals( "" + id ));
 	  assertTrue(  "ID did not get set",id != -42 );   
-   	assertTrue( "Max did not get set", max != -42 );
-    Map <String, String> changes = new HashMap<String, String> ();
+   	  assertTrue( "Max did not get set", max != -42 );
+      Map <String, String> changes = new HashMap<String, String> ();
 	  changes.put( "id", num ); 
 	  changes.put( "created_date", "2004-04-29" );
 	  changes.put( "deleted_date", "2007-10-29" );
@@ -201,8 +201,8 @@ public class DataTest extends TestCase {
 		    columns.put( "created_date", "2007-01-29" ); 
 		    columns.put( "deleted_date", "2008-01-29" ); 
 	    	columns.put( "drug_name", null );
-				columns.put( "clinic_name", "Chinese Clinic" );
-	      this.dataset.insert( "test", columns );
+			columns.put( "clinic_name", "Chinese Clinic" );
+	        this.dataset.insert( "test", columns );
 	  } catch( DataException x ) { if( x.innerException() instanceof SQLException ) return; else throw x.innerException(); } 		                         
 	  throw new Exception( "Attempt to insert null into non-null column did not throw exception" );        
 	}                                                          
@@ -213,14 +213,14 @@ public class DataTest extends TestCase {
 	    	columns.put( "created_date", "2007-04-29" );
 	    	columns.put( "deleted_date", "2007-06-29" );
         // Forget drug_name 
-				columns.put( "clinic_name", "Manchester Hospital" );
+			columns.put( "clinic_name", "Manchester Hospital" );
         this.dataset.insert( "test", columns );
       } catch( DataException x ) { if( x.innerException() instanceof SQLException ) return; else throw x.innerException();  } // Is that enough negatives?		                         
 	  throw new Exception( "Attempt to not insert anything into non-null column did not throw exception" );        
 	} 
                                                                      
 	public void testYouCanInsertColumnWithQuoteIn() throws Exception {
-		 Map <String, String> columns = new HashMap<String, String> ();
+	   Map <String, String> columns = new HashMap<String, String> ();
 	   columns.put( "clinic_name", "The O'Reilly Special Clinic" );
 	   columns.put( "drug_name", "Penicillin" );                 	                                  
 	   this.dataset.insert( "test", columns );
@@ -228,7 +228,7 @@ public class DataTest extends TestCase {
 	}
 
 	public void testYouCanInsertColumnWithQuotesIn() throws Exception {
-		 Map <String, String> columns = new HashMap<String, String> ();
+	   Map <String, String> columns = new HashMap<String, String> ();
 	   columns.put( "clinic_name", "The O'Reilly 'Special' Clinic" );
 	   columns.put( "drug_name", "Penicillin" );                 	                                  
 	   this.dataset.insert( "test", columns );
@@ -236,14 +236,14 @@ public class DataTest extends TestCase {
 	}                     
 
 	public void testYouCanInsertColumnWithDoubleQuotesIn() throws Exception {
-	 	 	Map <String, String> columns = new HashMap<String, String> ();
+	 	Map <String, String> columns = new HashMap<String, String> ();
 	    columns.put( "clinic_name", "The McTaggart \"Special\" Clinic" );
 	    columns.put( "drug_name", "Penicillin" );                 	                                  
 	    this.dataset.insert( "test", columns );
 	}          
                                                            
   public void testYouCanInsertColumnWithFunnyCharsIn() throws Exception {
- 	 Map <String, String> columns = new HashMap<String, String> ();
+   Map <String, String> columns = new HashMap<String, String> ();
    columns.put( "clinic_name", "\"The O`Reilly \"#$\\%^&*\" Clinic\"" );
    columns.put( "drug_name", "Penicillin" );                 	                                  
    this.dataset.insert( "test", columns );
@@ -251,8 +251,8 @@ public class DataTest extends TestCase {
 
  public void testYouCanInsertColumnWithQuotesAndDoubleQuotesIn() throws Exception {
    Map <String, String> columns = new HashMap<String, String> ();
-	 columns.put( "clinic_name", "'The O'Reilly \"Special\" Clinic'" );
-	 columns.put( "drug_name", "Penicillin" );                 	                                  
+   columns.put( "clinic_name", "'The O'Reilly \"Special\" Clinic'" );
+   columns.put( "drug_name", "Penicillin" );                 	                                  
    this.dataset.insert( "test", columns );
  }
                          
@@ -274,7 +274,7 @@ public class DataTest extends TestCase {
 	  for( String[] row : rows )  
 		id = Integer.parseInt( row[ 0 ] );                     
 	  assertTrue( "Did not find a row for Viagra in "+this.clinic+" after we tried to insert it", 
-			id != -42  );	  
+		id != -42  );	  
 		               
 	  whereClause = "Id = " + id;
 	  this.dataset.update( "test", updateCols, whereClause );

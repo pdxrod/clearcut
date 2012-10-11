@@ -11,9 +11,9 @@ import java.util.ArrayList;
 public class Ini extends HashMap<String, Object>
 {        
   private static final String INI = "app.ini";
-	private static String APP = INI;   
+  private static String APP = INI;   
   public static final String NO_SECTION = "_NO_SECTION_";
-	private String path;    
+  private String path;    
 	
 	private Ini() {	super(); }
 	               
@@ -26,7 +26,7 @@ public class Ini extends HashMap<String, Object>
 	}                    
 	
 	public String path() { 
-		if( this.path == null ) return null;
+	  if( this.path == null ) return null;
 	  if( this.path.endsWith( Ini.APP ) )
 		  return this.path.substring( 0, this.path.length() - (1+Ini.APP.length()) );		
 	  return this.path;      	
@@ -36,7 +36,7 @@ public class Ini extends HashMap<String, Object>
 	  Ini.APP = name + "-" + Ini.INI; 
 	}                     
 		   
-  public static String app() {
+    public static String app() {
 	  return Ini.APP;
 	} 	
 		
@@ -44,19 +44,19 @@ public class Ini extends HashMap<String, Object>
 	private synchronized void load( String path ) throws IOException {  		
 	  InputStream inStream = null; 
 	  try {
-		    inStream = new FileInputStream( new File( path ) );
-	      char[] convtBuf = new char[1024];
-        LineReader lr = new LineReader(inStream);   
-        int limit; int keyLen; int valueStart;
-        char c; boolean hasSep; boolean precedingBackslash;
-        String section = NO_SECTION; // Before reaching a 'section' in the .ini file (eg. [database]),
-        String lastSection = null;      // we are in a section called _NO_SECTION_
+		   inStream = new FileInputStream( new File( path ) );
+	       char[] convtBuf = new char[1024];
+      	   LineReader lr = new LineReader(inStream);   
+	       int limit; int keyLen; int valueStart;
+	       char c; boolean hasSep; boolean precedingBackslash;
+	       String section = NO_SECTION; // Before reaching a 'section' in the .ini file (eg. [database]),
+	       String lastSection = null;      // we are in a section called _NO_SECTION_
 		    List <String []> list = new ArrayList<String[]>(); 
 		    while ((limit = lr.readLine()) >= 0) {
-            c = 0; 
-            keyLen = 0;
-            valueStart = limit;
-            hasSep = false;
+              c = 0; 
+              keyLen = 0;
+              valueStart = limit;
+              hasSep = false;
 	          precedingBackslash = false;
             while (keyLen < limit) {
                 c = lr.lineBuf[keyLen];
@@ -129,24 +129,24 @@ public class Ini extends HashMap<String, Object>
             boolean isNewLine = true;
             boolean appendedLineBegin = false;
             boolean precedingBackslash = false;
-	    			boolean skipLF = false;
+	    	boolean skipLF = false;
 
             while (true) {
                 if (inOff >= inLimit) {
                     inLimit = inStream.read(inBuf);
-		    inOff = 0;
-		    if (inLimit <= 0) {
-			if (len == 0 || isCommentLine) { 
-			    return -1; 
-			}
-			return len;
+		        inOff = 0;
+		        if (inLimit <= 0) {
+			    if (len == 0 || isCommentLine) { 
+			      return -1; 
+			    }
+			    return len;
 		    }
 		}     
                 //The line below is equivalent to calling a 
                 //ISO8859-1 decoder.
 		c = (char) (0xff & inBuf[inOff++]);
-                if (skipLF) {
-                    skipLF = false;
+            if (skipLF) {
+                skipLF = false;
 		    if (c == '\n') {
 		        continue;
 		    }

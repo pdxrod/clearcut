@@ -32,7 +32,7 @@ public class Injector
 			String path = file.getAbsolutePath();      
 			if( ! path.equals( File.separator ) )	{
 			  int dirsUp = 0;             
-		    while (
+		      while (
 			       ! (path == null) &&
 					   ! path.equals( File.separator )		        
 			       && ! readAppIniFile( path ) 
@@ -41,7 +41,7 @@ public class Injector
 				  file = new File( path );
 				  path = chop( path ); 
 			  }
-	    }  
+	       }  
 		} catch( Exception x ) { x.printStackTrace(); }
 	
 	}                 
@@ -68,7 +68,7 @@ public class Injector
 		File file = new File( path );
 		if ( ! file.exists() ) return false;
 		else setProperties( path ); 
-	  return true;                     
+	    return true;                     
   }        
 
   @SuppressWarnings("unchecked") 
@@ -96,23 +96,23 @@ public class Injector
   public List<String> properties( String section, String key ) throws InjectionException {
     List < String > list = new ArrayList< String > ();
     List < String [] > properties = properties( section );  
- 	  for( String [] value : properties )
+ 	for( String [] value : properties )
 		  if( value == null || value.length != 2 ) throw new InjectionException( 
 		     "Problem initializing ["+section+"] section from "+Ini.app()+": not all entries in this section are key/value pairs" );
 		  else if( value[0].equals( key ) ) 
-		    list.add( value[1] );
-	  return list;
+		     list.add( value[1] );
+	return list;
   }
                                                    
   /** A key-value pair under a section, eg. realMember=example.biz.Member under [injection] */
   public String property( String section, String key ) throws InjectionException {
     List < String [] > properties = properties( section );  
 		for( String [] value : properties )
-	  	if( value == null || value.length != 2 ) throw new InjectionException( 
-	     "Problem initializing ["+section+"] section from "+Ini.app()+": not all entries in this section are key/value pairs" );
-	  	else if( value[0].equals( key ) ) 
-	    	return value[1];
-	  return null;
+	    	if( value == null || value.length != 2 ) throw new InjectionException( 
+	          "Problem initializing ["+section+"] section from "+Ini.app()+": not all entries in this section are key/value pairs" );
+	  	    else if( value[0].equals( key ) ) 
+	    	  return value[1];
+	return null;
   }
                 
   /** 'NO SECTION' properties are those at the top of the app.ini file above any 'sections' */
@@ -128,7 +128,7 @@ public class Injector
 		if(properties == null || properties.size() < 1) throw new InjectionException(
 		  "Section ["+section+"] was not found in "+Ini.app() );
 		
-		String constructor = property( section, key ); 
+	  String constructor = property( section, key ); 
 	  if( constructor == null || constructor.length() < 1 ) throw new InjectionException(
 		  "Valid "+key+" implementation not found in " + Ini.app() );
 		Object [] parameters = null;
@@ -142,7 +142,7 @@ public class Injector
 		}                            
 		
 	  Class [] classes = new Class[0]; 
-   	className = className.trim();                 	
+   	  className = className.trim();                 	
 		try {                                           
 	  	Class CLASS = Class.forName ( className );
 		  if( CLASS == null ) throw new InjectionException( ""+key+" implementation "+constructor+" not found" );
@@ -174,32 +174,32 @@ public class Injector
 		} // Indirection -> recursion. Is that a useful comment or what?
 	  catch( ClassNotFoundException c ) { return implement ( className ); }
 	  catch( Exception x ) {  throw new InjectionException( x ); } 
-    throw new InjectionException ( "Constructor not found for "+constructor+" from "+Ini.app() );	
+      throw new InjectionException ( "Constructor not found for "+constructor+" from "+Ini.app() );	
   }                                                 
 
   public Object implement( String key ) throws InjectionException {
 		return implement( "injection", key );
-	}
+  }
 	                                     
 	/** object is the thing you are trying to stick into a parameter list, castInto is the
 	type of the thing you are trying to stuff it into, and I can't remember what section is */
   private Object cast( String section, Class castInto, Object object ) throws InjectionException { 
 	  Class castFrom = object.getClass();  
 	  String str = object.toString();
-    if( castInto == castFrom ) 
+      if( castInto == castFrom ) 
 			return object;       
-		if( StringBuffer.class == castFrom && str.equals( "null" ) )
+	  if( StringBuffer.class == castFrom && str.equals( "null" ) )
 			return null;
-		if( numeric( castInto, object )) 	{	
+	  if( numeric( castInto, object )) 	{	
 				Boolean numeric = Numeric( str );
 				if( numeric == null ) return Integer.parseInt( str );
-				else 									return Double.parseDouble( str );
+				else 				  return Double.parseDouble( str );
 		}
 	  try {
 			if( StringBuffer.class == castFrom ) { // StringBuffer means something special - see parameters()
 		 		try { 
 					Object ca$t = implement( str ); // implement calls cast calls implement
-	    	  return castInto.cast( ca$t );   				    
+	    	        return castInto.cast( ca$t );   				    
 				} catch( InjectionException e ) {
 						str = property( section, str );
 						if( str == null ) 
@@ -220,9 +220,9 @@ public class Injector
   private boolean numeric( Class one, Object other )  {
 	  Class two = other.getClass();
 
-	  return( ( one == int.class || one == Integer.class ||
-	            one == double.class || one == Double.class ||
-	            one == float.class || one == Float.class ||
+	  return( (           one == int.class || one == Integer.class ||
+	                      one == double.class || one == Double.class ||
+	                      one == float.class || one == Float.class ||
 						  one == long.class || one == Long.class ||
 						  one == short.class || one == Short.class ||
 						  one == byte.class || one == Byte.class ||
@@ -234,9 +234,9 @@ public class Injector
 				             || Numeric( (String) other ).booleanValue() == true)
 				      )
 				      ||
-				      ( two == int.class || two == Integer.class ||
-					      two == double.class || two == Double.class ||
-		            two == float.class || two == Float.class ||
+				      (       two == int.class || two == Integer.class ||
+					          two == double.class || two == Double.class ||
+		                      two == float.class || two == Float.class ||
 							  two == long.class || two == Long.class ||
 							  two == short.class || two == Short.class ||
 							  two == byte.class || two == Byte.class ||
@@ -259,7 +259,7 @@ public class Injector
   public static char DOUBLEQUOTE = '"';
   public static char QUOTE = '\'';
   public static char UNDERSCORE = '_';
-	public static char COMMA = ',';   
+  public static char COMMA = ',';   
 	/** Reads the parameters out of a constructor line from app.ini, eg. 'org.foo.Bar("$", 42)' */
   private Object [] parameters( String constructor ) throws InjectionException {           
 	 try {

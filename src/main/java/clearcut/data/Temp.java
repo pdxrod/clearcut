@@ -10,7 +10,7 @@ public class Temp {
 	/** Tests logging etc. */
 	private Temp() 
 	{   
-		super();
+	  super();
 	  String msg = "Temp ";
 	  for( int i = 1; i < 1001; i ++ ) 
 	     this.logger.log( msg + i ); 	 
