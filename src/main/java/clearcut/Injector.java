@@ -170,34 +170,9 @@ public class Injector {
 		if (constructor == null || constructor.length() < 1)
 			throw new InjectionException("Valid " + key
 					+ " implementation not found in " + Ini.app());
-		Object[] parameters = null;
-		String className = new String(constructor);
-		boolean hasParameters = constructor.indexOf('(') > -1;
-		if (hasParameters) {
-			className = constructor.substring(0, constructor.indexOf('('));
-			parameters = parameters(constructor);
-			if (parameters.length < 1)
-				hasParameters = false;
-		}
 
-		Class[] classes = new Class[0];
-		className = className.trim();
-		try {
-			Class cla$$ = Class.forName(className);
-			if (cla$$ == null)
-				throw new InjectionException("" + key + " implementation "
-						+ constructor + " not found");
-			if (!hasParameters) // Hope the thing has a default constructor
-				return cla$$.newInstance();
-			Constructor[] constructors = cla$$.getConstructors();
-      Object result = tryToImplement(constructors, parameters, section);
-      if(null != result) return result;
-		} // Indirection -> recursion.
-		catch (ClassNotFoundException c) {
-			return implement(className);
-		} catch (Exception x) {
-			throw new InjectionException(x);
-		}
+    Object result = tryToImplement(constructor, section, key);
+    if(null != result) return result;
 		throw new InjectionException("Constructor not found for " + constructor
 				+ " from " + Ini.app());
 	}
@@ -206,6 +181,38 @@ public class Injector {
 	public Object implement(String key) throws InjectionException {
 		return implement("injection", key);
 	}
+
+  private Object tryToImplement(String constructor, String section, String key)
+   throws InjectionException {
+     Object[] parameters = null;
+     String className = new String(constructor);
+     boolean hasParameters = constructor.indexOf('(') > -1;
+     if (hasParameters) {
+       className = constructor.substring(0, constructor.indexOf('('));
+       parameters = parameters(constructor);
+       if (parameters.length < 1)
+         hasParameters = false;
+     }
+ 		Class[] classes = new Class[0];
+ 		className = className.trim();
+ 		try {
+ 			Class cla$$ = Class.forName(className);
+ 			if (cla$$ == null)
+ 				throw new InjectionException("" + key + " implementation "
+ 						+ constructor + " not found");
+ 			if (!hasParameters) // Maybe it has a default constructor with no params
+ 				return cla$$.newInstance();
+ 			Constructor[] constructors = cla$$.getConstructors();
+       Object result = tryToImplement(constructors, parameters, section);
+       if(null != result) return result;
+ 		} // Indirection -> recursion.
+ 		catch (ClassNotFoundException c) {
+ 			return implement(className);
+ 		} catch (Exception x) {
+ 			throw new InjectionException(x);
+ 		}
+    return null;
+  }
 
   private Object tryToImplement(Constructor[] constructors, Object[] parameters, String section)
    throws InjectionException {
