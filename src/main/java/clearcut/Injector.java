@@ -151,10 +151,10 @@ public class Injector {
 	}
 
 	/**
-	 * This method is the core of Injector. It returns objects created using
-	 * constructors from app.ini. 'section' is a section of the ini file,
-   * e.g. everything under '[injection]'. 'key' is the left-hand of a key-value
-   * pair within that section, e.g. 'member=example.biz.Member' - key is 'member'.
+	 * This method is the core of Injector. It returns objects constructed by utilising
+	 * constructors from the ini file -> see app.ini. 'section' is a section of the ini
+   * file, e.g. everything under '[injection]'. 'key' is the left-hand of a key-value
+   * pair within that section, e.g. in 'person=example.biz.Member' - key is 'person'.
 	 */
 	public Object implement(String section, String key)
 			throws InjectionException {
@@ -171,8 +171,9 @@ public class Injector {
 			throw new InjectionException("Valid " + key
 					+ " implementation not found in " + Ini.app());
 
-    Object result = tryToImplement(constructor, section, key);
-    if(null != result) return result;
+    Object result = tryToImplementWithConstructor(constructor, section, key);
+    if (null != result) return result;
+
 		throw new InjectionException("Constructor not found for " + constructor
 				+ " from " + Ini.app());
 	}
@@ -182,39 +183,58 @@ public class Injector {
 		return implement("injection", key);
 	}
 
-  private Object tryToImplement(String constructor, String section, String key)
+  private Object tryToImplementWithConstructor(String constructor, String section, String key)
    throws InjectionException {
-     Object[] parameters = null;
-     String className = new String(constructor);
-     boolean hasParameters = constructor.indexOf('(') > -1;
-     if (hasParameters) {
-       className = constructor.substring(0, constructor.indexOf('('));
-       parameters = parameters(constructor);
-       if (parameters.length < 1)
-         hasParameters = false;
-     }
- 		Class[] classes = new Class[0];
- 		className = className.trim();
- 		try {
- 			Class cla$$ = Class.forName(className);
- 			if (cla$$ == null)
- 				throw new InjectionException("" + key + " implementation "
- 						+ constructor + " not found");
- 			if (!hasParameters) // Maybe it has a default constructor with no params
- 				return cla$$.newInstance();
- 			Constructor[] constructors = cla$$.getConstructors();
-       Object result = tryToImplement(constructors, parameters, section);
-       if(null != result) return result;
- 		} // Indirection -> recursion.
- 		catch (ClassNotFoundException c) {
- 			return implement(className);
+    String className = className(constructor);
+    try {
+      Object result = tryToImplementWithParametersOrDefault(constructor, section, key);
+      if (null != result) return result;
+    } catch (ClassNotFoundException c) {
+ 			return implement(className);  // recursion
  		} catch (Exception x) {
  			throw new InjectionException(x);
  		}
     return null;
   }
 
-  private Object tryToImplement(Constructor[] constructors, Object[] parameters, String section)
+  private String className(String constructor) {
+    String className = new String(constructor);
+    boolean hasParameters = constructor.indexOf('(') > -1;
+    if (hasParameters) {
+      className = constructor.substring(0, constructor.indexOf('('));
+    }
+    return className;
+  }
+
+  private Object tryToImplementWithParametersOrDefault(String constructor, String section, String key)
+   throws InjectionException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+     Object[] parameters = null;
+     String className = new String(constructor);
+     boolean hasParameters = constructor.indexOf('(') > -1;
+     if (hasParameters) {
+       className = className(constructor);
+       parameters = parameters(constructor);
+       if (parameters.length < 1)
+         hasParameters = false;
+    }
+
+    Class[] classes = new Class[0];
+    String forName = className.trim();
+    Class cla$$ = Class.forName(forName);
+    if (cla$$ == null)
+      throw new InjectionException("" + key + " implementation "
+          + constructor + " not found");
+
+    if (! hasParameters) // Maybe it has a default constructor with no params
+      return cla$$.newInstance();
+
+    Constructor[] constructors = cla$$.getConstructors();
+    Object result = tryToImplementWithConstructors(constructors, parameters, section);
+    if (null != result) return result;
+    return null;
+  }
+
+  private Object tryToImplementWithConstructors(Constructor[] constructors, Object[] parameters, String section)
    throws InjectionException {
     try {
       for (Constructor con : constructors) {
@@ -247,8 +267,8 @@ public class Injector {
 
 	/**
 	 * object is the thing you are trying to put into a parameter list,
-	 * castInto is the type of the thing you are trying to stuff it into, and
-   * 'section' is a section of the app.ini file, e.g. everything under '[injection]'
+	 * castInto is the type of the thing you are trying to cast it into, and
+   * 'section' is a section of the ini file, e.g. everything under '[injection]'
 	 */
 	private Object cast(String section, Class castInto, Object object)
 			throws InjectionException {
@@ -266,12 +286,10 @@ public class Injector {
 				return Double.parseDouble(str);
 		}
 		try {
-			if (StringBuffer.class == castFrom) { // StringBuffer means
-													// something special - see
-													// parameters()
+			if (StringBuffer.class == castFrom) {
+        // StringBuffer means something special - see method parameters()
 				try {
-					Object ca$t = implement(str); // implement calls cast calls
-													// implement
+					Object ca$t = implement(str); // implement() calls cast(), and vice-versa
 					return castInto.cast(ca$t);
 				} catch (InjectionException e) {
 					str = property(section, str);
