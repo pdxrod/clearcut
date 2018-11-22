@@ -152,7 +152,9 @@ public class Injector {
 
 	/**
 	 * This method is the core of Injector. It returns objects created using
-	 * constructors from app.ini.
+	 * constructors from app.ini. 'section' is a section of the app.ini file,
+   * e.g. everything under '[injection]'. 'key' is the left-hand of a key-value
+   * pair within that section, e.g. 'member=example.biz.Member' - key is 'member'.
 	 */
 	public Object implement(String section, String key)
 			throws InjectionException {

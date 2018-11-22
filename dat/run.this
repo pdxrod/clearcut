@@ -1,2 +1,1 @@
-#!/bin/sh
 mysql -u root < dat/build.mysql

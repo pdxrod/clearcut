@@ -1,153 +1,151 @@
 #!/bin/sh        
 
-APP_NAME=clearcut 
-TEMPDIR=tmp 
-EXECPATH=bin     
-JARFILES=jar           
-JAVASRC=src           
-WEBINF=$EXECPATH/WEB-INF   
+APP_NAME=clearcut
+TEMPDIR=tmp
+EXECPATH=bin
+JARFILES=jar
+JAVASRC=src
+WEBINF=$EXECPATH/WEB-INF
 WININF=$WEBINF
 WEBAPP=$JAVASRC/main/webapp
-WEBLIB=$WEBAPP/WEB-INF/lib 
-JUNIT=org.junit.runner.JUnitCore  
-TESTDIRS=                     
+WEBLIB=$WEBAPP/WEB-INF/lib
+JUNIT=org.junit.runner.JUnitCore
+TESTDIRS=
 
-# Build, back up and test 
-   
-FINDFILE=      
+# Build, back up and test
+
+FINDFILE=
 if [ -x /bin/find ] ; then
   FINDFILE=/bin/find
-fi    
+fi
 if [ -x /usr/bin/find ] ; then
   FINDFILE=/usr/bin/find
-fi           
+fi
 if [ -x /usr/local/bin/find ] ; then
   FINDFILE=/usr/local/bin/find
-fi  
+fi
 SED=sed
 if [ -x /bin/sed ] ; then
   SED=/bin/sed
-fi    
+fi
 if [ -x /usr/bin/sed ] ; then
   SED=/usr/bin/sed
 fi
-    
+
 # If M$ find, no dice
 if [ "" == "$FINDFILE" ] ; then
   echo "If on Windows, get Cygwin from www.cygwin.com"
   exit 1
-fi     
+fi
 
 CLR=clear
-SEP=":"  
-DIR="/"  
-ZIP=zip   
+SEP=":"
+DIR="/"
+ZIP=zip
   # uname fails in a DOS prompt
 OPSYS=`uname | $SED s/CYGWIN.*/CYGWIN/`
-if [ "$OPSYS" == "CYGWIN"  ] ; then   
+if [ "$OPSYS" == "CYGWIN"  ] ; then
   # Use Windows-DOS-style paths for some commands, and Unix for others
-  WININF=`cygpath -d $WEBINF`   
+  WININF=`cygpath -d $WEBINF`
   CLR=cls
   SEP=";"
   DIR=\\
   ZIP=tar
-fi                              
+fi
 
-$CLR 2>/dev/null               
-                                           
-mkdir $EXECPATH 2>/dev/null 
-cd $EXECPATH       
-$FINDFILE . -not -name '\.svn*' -exec rm -Rf {} \; 2>/dev/null 
+$CLR 2>/dev/null
+
+mkdir $EXECPATH 2>/dev/null
+cd $EXECPATH
+$FINDFILE . -not -name '\.svn*' -exec rm -Rf {} \; 2>/dev/null
 cd ..
-            
-JARS=`ls $JARFILES/*.jar`        
+
+JARS=`ls $JARFILES/*.jar`
 JAVAPATH=$WEBINF
-if [ "$OPSYS" == "CYGWIN"  ] ; then   
-  JAVAPATH=$WININF  
+if [ "$OPSYS" == "CYGWIN"  ] ; then
+  JAVAPATH=$WININF
 fi
 JAVAPATH=$JAVAPATH$DIR
-JAVAPATH="$JAVAPATH"classes          
+JAVAPATH="$JAVAPATH"classes
 JAVAROOT=$JAVAPATH
   # bin\WEB-INF\classes;jar\junit.jar;src\main\webapp\WEB-INF\lib\MSSQLJ~1.JAR...
 for JAR in $JARS ; do
-  if [ "$OPSYS" == "CYGWIN"  ] ; then        
-      JAR=`cygpath -d $JAR` 
-  fi 
-  JAVAPATH=$JAVAPATH$SEP$JAR  
-done;     
-JARS=`ls $WEBLIB/*.jar`
-for JAR in $JARS ; do                       
-  if [ "$OPSYS" == "CYGWIN"  ] ; then        
-      JAR=`cygpath -d $JAR` 
+  if [ "$OPSYS" == "CYGWIN"  ] ; then
+      JAR=`cygpath -d $JAR`
   fi
-  JAVAPATH=$JAVAPATH$SEP$JAR  
-done;             
-mkdir $WEBINF 2>/dev/null                                            
-mkdir $JAVAROOT 2>/dev/null                    
+  JAVAPATH=$JAVAPATH$SEP$JAR
+done;
+JARS=`ls $WEBLIB/*.jar`
+for JAR in $JARS ; do
+  if [ "$OPSYS" == "CYGWIN"  ] ; then
+      JAR=`cygpath -d $JAR`
+  fi
+  JAVAPATH=$JAVAPATH$SEP$JAR
+done;
+mkdir $WEBINF 2>/dev/null
+mkdir $JAVAROOT 2>/dev/null
 
    # lib, xml, jsp...
 cp -Rf $WEBAPP/* $EXECPATH/
-   # Exclude Subversion paths which contain '.svn' 
-SRCFILES=`$FINDFILE $JAVASRC -not -name '*\.svn*' -type f -name '*.java'`         
-javac -d $JAVAROOT -classpath $JAVAPATH $SRCFILES         
+   # Exclude Subversion paths which contain '.svn'
+SRCFILES=`$FINDFILE $JAVASRC -not -name '*\.svn*' -type f -name '*.java'`
+javac -d $JAVAROOT -classpath $JAVAPATH $SRCFILES
 TESTDIRS=`$FINDFILE $WEBINF/classes -not -name '*\.svn*' -type f -name '*Test*.class'`
 
 USRTMP=~/tmp/$APP_NAME
-if [ "" != "$TESTDIRS" ] ; then     
+if [ "" != "$TESTDIRS" ] ; then
   mkdir     ~/tmp      2>/dev/null
   mkdir     $USRTMP    2>/dev/null
   rm -Rf    $USRTMP/*  2>/dev/null
-  cp -Rf .  $USRTMP 
+  cp -Rf .  $USRTMP
   if [ -d   $USRTMP/log ] ; then
     rm -Rf  $USRTMP/log/* 2>/dev/null
-  fi    
+  fi
 # Remove Subversion folders in temp dir before making backup
   $FINDFILE $USRTMP -iname '.svn*' -exec rm -Rf {} \; 2>/dev/null
   rm ~/tmp/$APP_NAME.*      2>/dev/null
-  cd $USRTMP             
-  if [ "$ZIP" == "tar" ] ; then   
-    $ZIP cvfz ~/tmp/$APP_NAME.tgz ./* &>/dev/null 
+  cd $USRTMP
+  if [ "$ZIP" == "tar" ] ; then
+    $ZIP cvfz ~/tmp/$APP_NAME.tgz ./* &>/dev/null
   else
-    $ZIP -r   ~/tmp/$APP_NAME.zip ./* >/dev/null   
+    $ZIP -r   ~/tmp/$APP_NAME.zip ./* >/dev/null
   fi
-  cd $WEBINF/classes   
+  cd $WEBINF/classes
   JARS=`ls ../../../$JARFILES/*.jar`
   JAVAPATH=.
-  for JAR in $JARS ; do                   
-    if [ "$OPSYS" == "CYGWIN"  ] ; then        
-      JAR=`cygpath -d $JAR` 
+  for JAR in $JARS ; do
+    if [ "$OPSYS" == "CYGWIN"  ] ; then
+      JAR=`cygpath -d $JAR`
     fi
-    JAVAPATH=$JAVAPATH$SEP$JAR  
-  done;  
+    JAVAPATH=$JAVAPATH$SEP$JAR
+  done;
   JARS=`ls ../../../$WEBLIB/*.jar`
   for JAR in $JARS ; do
-    if [ "$OPSYS" == "CYGWIN"  ] ; then        
-      JAR=`cygpath -d $JAR` 
+    if [ "$OPSYS" == "CYGWIN"  ] ; then
+      JAR=`cygpath -d $JAR`
     fi
-    JAVAPATH=$JAVAPATH$SEP$JAR                  
+    JAVAPATH=$JAVAPATH$SEP$JAR
   done;
   TESTDIRS=`$FINDFILE . -not -name '*\.svn*' -type f -name '*Test*.class'`
-  for FILE in $TESTDIRS ; do # If you can't read this, you shouldn't be here        
-    FILE=`echo $FILE | $SED s/.class\$// | $SED s/\\\//\\./g | $SED s/\\\.\\\.//`        
-    java -classpath $JAVAPATH $JUNIT $FILE 
-  done;  
+  for FILE in $TESTDIRS ; do # If you can't read this, you shouldn't be here
+    FILE=`echo $FILE | $SED s/.class\$// | $SED s/\\\//\\./g | $SED s/\\\.\\\.//`
+    java -classpath $JAVAPATH $JUNIT $FILE
+  done;
   cd ../../..
-fi                      
+fi
 
-mkdir $TEMPDIR 2>/dev/null    
-rm -Rf $TEMPDIR/* 2>/dev/null  
+mkdir $TEMPDIR 2>/dev/null
+rm -Rf $TEMPDIR/* 2>/dev/null
 
-# Don't package Test classes in web application  
+# Don't package Test classes in web application
 for FILE in $TESTDIRS ; do
   rm $WEBINF/classes/$FILE
 done;
-cp -Rf $EXECPATH/* $TEMPDIR/ 
-$FINDFILE $TEMPDIR -iname '.svn*' -exec rm -Rf {} \; 2>/dev/null   
+cp -Rf $EXECPATH/* $TEMPDIR/
+$FINDFILE $TEMPDIR -iname '.svn*' -exec rm -Rf {} \; 2>/dev/null
 
 cd $TEMPDIR
 jar cf $APP_NAME-example.war *
 cd ..
 cp $TEMPDIR/$APP_NAME-example.war $EXECPATH
 rm -Rf $TEMPDIR
-                                                 
-
