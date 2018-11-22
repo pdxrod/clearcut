@@ -124,7 +124,7 @@ public class Injector {
 
 	/**
 	 * A key-value pair under a section, eg. realMember=example.biz.Member under
-	 * [injection]
+	 * [injection] in an ini file. See for example app.ini.
 	 */
 	public String property(String section, String key)
 			throws InjectionException {
@@ -143,8 +143,8 @@ public class Injector {
 	}
 
 	/**
-	 * 'NO SECTION' properties are those at the top of the app.ini file above
-	 * any 'sections'
+	 * 'NO SECTION' properties are those at the top of the ini file above
+	 * any 'sections'. See for example app.ini.
 	 */
 	public String property(String key) throws InjectionException {
 		return property(Ini.NO_SECTION, key);
@@ -152,7 +152,7 @@ public class Injector {
 
 	/**
 	 * This method is the core of Injector. It returns objects created using
-	 * constructors from app.ini. 'section' is a section of the app.ini file,
+	 * constructors from app.ini. 'section' is a section of the ini file,
    * e.g. everything under '[injection]'. 'key' is the left-hand of a key-value
    * pair within that section, e.g. 'member=example.biz.Member' - key is 'member'.
 	 */
@@ -183,36 +183,16 @@ public class Injector {
 		Class[] classes = new Class[0];
 		className = className.trim();
 		try {
-			Class CLASS = Class.forName(className);
-			if (CLASS == null)
+			Class cla$$ = Class.forName(className);
+			if (cla$$ == null)
 				throw new InjectionException("" + key + " implementation "
 						+ constructor + " not found");
 			if (!hasParameters) // Hope the thing has a default constructor
-				return CLASS.newInstance();
-			Constructor[] constructors = CLASS.getConstructors();
-			for (Constructor con : constructors) {
-				classes = con.getParameterTypes();
-				if (classes.length == parameters.length) {
-					int matches = 0;
-					for (int i = 0; i < classes.length; i++) {
-						Class cla$$ = classes[i];
-						Object obj = parameters[i];
-						try {
-							parameters[matches++] = cast(section, cla$$, obj);
-						} catch (InjectionCastException e) {
-							// Don't use this constructor, try another...
-						}
-					} // Same no. of params, same(ish) types... let's try it
-					if (matches == parameters.length) {
-						try {
-							return con.newInstance(parameters);
-						} catch (IllegalArgumentException i) {
-							// Oh well, we tried... try another constructor
-						}
-					}
-				}
-			}
-		} // Indirection -> recursion. Is that a useful comment or what?
+				return cla$$.newInstance();
+			Constructor[] constructors = cla$$.getConstructors();
+      Object result = tryToImplement(constructors, parameters, section);
+      if(null != result) return result;
+		} // Indirection -> recursion.
 		catch (ClassNotFoundException c) {
 			return implement(className);
 		} catch (Exception x) {
@@ -222,14 +202,46 @@ public class Injector {
 				+ " from " + Ini.app());
 	}
 
+  /** If implement() is called without a section, use the section [injection] in the ini file */
 	public Object implement(String key) throws InjectionException {
 		return implement("injection", key);
 	}
 
+  private Object tryToImplement(Constructor[] constructors, Object[] parameters, String section)
+   throws InjectionException {
+    try {
+      for (Constructor con : constructors) {
+        Class[] classes = con.getParameterTypes();
+        if (classes.length == parameters.length) {
+          int matches = 0;
+          for (int i = 0; i < classes.length; i++) {
+            Class cla$$ = classes[i];
+            Object obj = parameters[i];
+            try {
+              parameters[matches++] = cast(section, cla$$, obj);
+            } catch (InjectionCastException e) {
+              // Don't use this constructor, try another...
+            }
+          } // Same no. of params, same(ish) types... let's try it
+          if (matches == parameters.length) {
+            try {
+              return con.newInstance(parameters);
+            } catch (IllegalArgumentException i) {
+              // Oh well, we tried... let's try another constructor
+            }
+          }
+        }
+      }
+    } catch(Exception x) {
+			throw new InjectionException(x);
+    }
+    return null;
+  }
+
 	/**
-	 * object is the thing you are trying to stick into a parameter list,
-	 * castInto is the type of the thing you are trying to stuff it into, and I
-	 * can't remember what section is
+	 * object is the thing you are trying to put into a parameter list,
+	 * castInto is the type of the thing you are trying to stuff it into, and
+   * 'section' is a section of the app.ini file, e.g. everything under '[injection]'
 	 */
 	private Object cast(String section, Class castInto, Object object)
 			throws InjectionException {
@@ -279,8 +291,9 @@ public class Injector {
 				|| one == long.class || one == Long.class || one == short.class
 				|| one == Short.class || one == byte.class || one == Byte.class
 				|| one == char.class || one == Character.class
-				|| one == BigInteger.class || one == BigDecimal.class) && ((two == String.class && (Numeric((String) other) == null || Numeric(
-				(String) other).booleanValue() == true)) || (two == int.class
+				|| one == BigInteger.class || one == BigDecimal.class) &&
+        ((two == String.class && (Numeric((String) other) == null || Numeric(
+				 (String) other).booleanValue() == true)) || (two == int.class
 				|| two == Integer.class || two == double.class
 				|| two == Double.class || two == float.class
 				|| two == Float.class || two == long.class || two == Long.class
