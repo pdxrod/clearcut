@@ -13,7 +13,7 @@ import clearcut.Logger;
 import clearcut.InjectionException;
 import static clearcut.Injector.INJECTOR;
 
-/* You need junit-4.1.jar and mysql.jar, mssql.jar or similar on your CLASSPATH 
+/* You need junit-4.1.jar and mysql.jar, mssql.jar or similar on your CLASSPATH
  and table 'test' in the clearcut_test database - run dat/build.mysql etc. to create it
  */
 
@@ -27,7 +27,7 @@ public class DataTest extends TestCase {
 
 	public void setUp() throws Exception {
 		this.clinic = "Portland Clinic";
-		if (!m$()) {
+		if (! m$()) {
 			String jdbc_driver = INJECTOR.property("database", "jdbc_driver");
 			Class.forName(jdbc_driver);
 			this.dataset = (Dataset) INJECTOR.implement("database", "dataset");
@@ -48,17 +48,12 @@ public class DataTest extends TestCase {
 		if (name.indexOf("microsoft") < 0 || name.indexOf("sqlserver") < 0
 				|| msg.indexOf("cannot") < 0 || msg.indexOf("identity") < 0)
 			throw x;
-
 	}
 
-	// This method follows Microsoft's instructions: load the 2005 JDBC driver
-	// first:
-	// Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); // 2005
-	// version
-	// Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver"); // 2000
-	// version
-	// This attempts to load both drivers, and returns false if both attempts
-	// fail
+	// This method follows Microsoft's instructions: load the 2005 JDBC driver first:
+	// Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); 2005 version
+	// Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver"); 2000 version
+	// This attempts to load both drivers, and returns false if both attempts fail
 	private boolean m$() {
 		try {
 			String m$_url = INJECTOR.property("database", "m$_url");
@@ -106,7 +101,6 @@ public class DataTest extends TestCase {
 		}
 
 		return true;
-
 	}
 
 	public void testGetDataByColumnNumbersWorks() throws Exception {
@@ -139,8 +133,7 @@ public class DataTest extends TestCase {
 		}
 		assertTrue("ID did not get set", id != -42);
 		Map<String, String> changes = new HashMap<String, String>();
-		changes.put("id", "" + (id + 42)); // Insert an ID greater than the ones
-											// already there
+		changes.put("id", "" + (id + 42)); // Insert an ID greater than the ones already there
 		changes.put("accepted_date", "2007-01-02");
 		changes.put("last_touched_date", "2008-01-20");
 		changes.put("created_date", "2007-01-29");
@@ -150,8 +143,7 @@ public class DataTest extends TestCase {
 		try {
 			this.dataset.insert("test", changes);
 		} catch (DataException d) {
-			m$(d); // See if it's an expected exception from $QL $server -
-					// swallow it - else throw it
+			m$(d); // See if it's an expected exception from SQL Server - swallow it - else throw it
 		}
 	}
 
@@ -171,11 +163,10 @@ public class DataTest extends TestCase {
 				max = tmp;
 			if (id == -42)
 				id = Integer.parseInt(num);
-			// Find id and max, different unique ids for failed update and
-			// successful update - see below
+			// Find id and max, different unique ids for failed update and successful update - see below
 		}
 		assertTrue("Two different ids not found - needed for test",
-				!num.equals("" + id));
+				! num.equals("" + id));
 		assertTrue("ID did not get set", id != -42);
 		assertTrue("Max did not get set", max != -42);
 		Map<String, String> changes = new HashMap<String, String>();
@@ -193,17 +184,14 @@ public class DataTest extends TestCase {
 		if (!ex)
 			throw new Exception(
 					"Attempt to change an id to an id which was already there did not throw exception");
-		// You can update an existing id to a completely original brand new id
-		// in MySQL
+		// You can update an existing id to a completely original brand new id in MySQL
 		changes.put("id", "" + (max + 1));
 		changes.put("drug_name", "Tylenol");
 		try {
 			this.dataset.update("test", changes, "Id = '" + id + "'");
 		} catch (DataException d) {
-			m$(d); // See if it's an expected exception from $QL $server -
-					// swallow it - else throw it
+			m$(d); // See if it's an expected exception from SQL Server - swallow it - else throw it
 		}
-
 	}
 
 	public void testYouCannotInsertAnInvalidDate() throws Exception {
@@ -256,7 +244,7 @@ public class DataTest extends TestCase {
 				return;
 			else
 				throw x.innerException();
-		} // Is that enough negatives?
+		}
 		throw new Exception(
 				"Attempt to not insert anything into non-null column did not throw exception");
 	}
@@ -266,7 +254,6 @@ public class DataTest extends TestCase {
 		columns.put("clinic_name", "The O'Reilly Special Clinic");
 		columns.put("drug_name", "Penicillin");
 		this.dataset.insert("test", columns);
-
 	}
 
 	public void testYouCanInsertColumnWithQuotesIn() throws Exception {
@@ -274,7 +261,6 @@ public class DataTest extends TestCase {
 		columns.put("clinic_name", "The O'Reilly 'Special' Clinic");
 		columns.put("drug_name", "Penicillin");
 		this.dataset.insert("test", columns);
-
 	}
 
 	public void testYouCanInsertColumnWithDoubleQuotesIn() throws Exception {
@@ -328,14 +314,13 @@ public class DataTest extends TestCase {
 				table.size() > 0);
 		for (Map<String, String> row : table)
 			if (row.get("drug_name").equals(drug))
-				found = true; // Where clause should guarantee if there are any
-								// rows they are right, but just in case...
+				found = true;
+    // Where clause should guarantee if there are any rows they are right, but just in case...
 		assertTrue("Didn't find a row for " + drug + " in " + this.clinic,
 				found);
 	}
 
 	public void testYouCanChange() throws Exception {
-
 		doDelete("Sudafed");
 		doDelete("Amoxil");
 

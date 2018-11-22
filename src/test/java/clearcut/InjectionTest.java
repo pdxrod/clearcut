@@ -17,38 +17,38 @@ import static clearcut.Injector.INJECTOR;
 
 /**
  * To run this, app.ini should contain <code>
-	 
+
 [injection]
 realMember=example.biz.Member
-mockMember=example.biz.MockMember    
-member=mockMember                        
+mockMember=example.biz.MockMember
+member=mockMember
 doubleIndirection=member
 noMember=thisDoesNotExist
-noParamsMember=example.biz.Member  ( ) 
-emptyMember= 
+noParamsMember=example.biz.Member  ( )
+emptyMember=
 
 a_ctor=example.biz.ActorType("Patient") # Test spacing, quotes, booleans, objects...
 a_member=example.biz.Member('Rod',"David" , "O'Reilly", a_ctor, true)
 
 a_drug=example.biz.Medication( "Prozac", 'Useless', 0, 42) # Numbers and primitives
-number_cast_error = example.biz.Medication( "Zoloft", 'Useless', 2.0, -42 ) 
+number_cast_error = example.biz.Medication( "Zoloft", 'Useless', 2.0, -42 )
 
 should_fail = example.biz.Medication( "Pseudoephedrine", 'Wrong, 1, 42 ) ; Missing quote
-should_also_fail=example.biz.Medication("wrong","number","and""type" "of","parameters" )  
+should_also_fail=example.biz.Medication("wrong","number","and""type" "of","parameters" )
 should_fail_too= example.biz.Member( "No closing", 'parenthesis)', a_ctor, true
 
-no_commas=example.biz.Member( "Who"'needs' 'commas?',     dr_who false   ) ) ) 
+no_commas=example.biz.Member( "Who"'needs' 'commas?',     dr_who false   ) ) )
 dr_who=example.biz.ActorType("Doctor") # Commas, spaces and extra brackets are optional
 
 dr_666=example.biz.ActorType("Doctor")
-num_in_name=example.biz.Member( 'Jim' null 'Catch22' dr_666 true ) 
+num_in_name=example.biz.Member( 'Jim' null 'Catch22' dr_666 true )
 
 too_many_minuses=java.lang.Integer(-42-1 )
-too_many_dots=java.lang.Integer( 0.1.2 )      
+too_many_dots=java.lang.Integer( 0.1.2 )
 dot_at_end_err=java.lang.Long(42.)
 ok_number=java.lang.Integer( -42)
 overflower=java.lang.Byte(42000000) # 2147483648 is MaxInt + 1 - works OK in a long parameter
-long_higher_than_int=example.biz.Medication( "Paxil" , 'Useless' , 42 , 2147483648 )  
+long_higher_than_int=example.biz.Medication( "Paxil" , 'Useless' , 42 , 2147483648 )
 
 </code>
  */
@@ -88,7 +88,7 @@ public class InjectionTest extends TestCase {
 		} catch (InjectionException e) {
 			return;
 		}
-		throw new Exception("We should not of gotten here");
+		throw new Exception("We should not have reached here");
 	}
 
 	public void testNonExistentMemberCausesException() throws Exception {
@@ -171,10 +171,9 @@ public class InjectionTest extends TestCase {
 	}
 
 	public void testLongParameter() throws Exception {
-		IMedication med = (IMedication) INJECTOR
-				.implement("long_higher_than_int");
+		IMedication med = (IMedication) INJECTOR.implement("long_higher_than_int");
 		long outOf = med.outOf();
-		assertTrue("Should be higher than " + Integer.MAX_VALUE,
+		assertTrue("" + outOf + " should be higher than " + Integer.MAX_VALUE,
 				((long) Integer.MAX_VALUE) < outOf);
 	}
 
@@ -197,7 +196,7 @@ public class InjectionTest extends TestCase {
 			return; // OK
 		}
 		throw new Exception(
-				"Too many dots in number failed to fail like it should have");
+				"Too many dots in number, 0.1.2, failed to fail like it should have");
 	}
 
 	public void testDotAtEndOfNumberIsNoGood() throws Exception {
@@ -207,7 +206,7 @@ public class InjectionTest extends TestCase {
 			return;
 		}
 		throw new Exception(
-				"Number ending in a dot didn't throw exception - this is not good news");
+				"Number ending in a dot didn't throw exception - it should have");
 	}
 
 	public void testOverflow() throws Exception {
@@ -216,7 +215,7 @@ public class InjectionTest extends TestCase {
 		} catch (InjectionException e) {
 			return;
 		}
-		throw new Exception("Big number didn't throw exception but shoulduv");
+		throw new Exception("Big number didn't throw exception but should have done so");
 	}
 
 	public void testCommasAreOptionalAndForwardReferencesWork()
@@ -255,7 +254,7 @@ public class InjectionTest extends TestCase {
 		} catch (InjectionException e) {
 			return;
 		}
-		throw new Exception("This should not happen");
+		throw new Exception("This exception should not happen");
 	}
 
 	public void testConstructorInjectionWithFaultyParameterFails()
@@ -266,7 +265,7 @@ public class InjectionTest extends TestCase {
 		} catch (InjectionException e) {
 			return;
 		}
-		throw new Exception("We should so not be here");
+		throw new Exception("We should not be here");
 	}
 
 	public void testConstructorInjectionWithWrongNumberOfParametersFails()
@@ -277,7 +276,7 @@ public class InjectionTest extends TestCase {
 		} catch (InjectionException e) {
 			return;
 		}
-		throw new Exception("This is not a place we want to be");
+		throw new Exception("We should not be here");
 	}
 
 	public void testConstructorInjectionWithNoClosingParenthesisFails()
@@ -288,7 +287,7 @@ public class InjectionTest extends TestCase {
 		} catch (InjectionException e) {
 			return;
 		}
-		throw new Exception("Something has gone very wrong");
+		throw new Exception("Something has gone wrong");
 	}
 
 	// Please keep
