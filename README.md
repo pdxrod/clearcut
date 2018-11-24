@@ -3,10 +3,10 @@
 No warranties are given for this software's suitability for
 any purpose, security, safety or anything else - the software
 is distributed AS IS and is governed by the Gnu Public License:
-http://www.gnu.org/licenses/gpl-3.0.txt
-git://github.com/roddotnet/clearcut.git
+[http://www.gnu.org/licenses/gpl-3.0.txt](http://www.gnu.org/licenses/gpl-3.0.txt)
 
-Clearcut is a simple dependency injection, database
+
+Clearcut is a simple dependency injection, object-relational mapping
 and logging framework for Java and which avoids the complexity
 of XML configuration files.
 
